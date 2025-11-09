@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <link rel="stylesheet" href="style.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
+    <script src="index.js"></script>
+    <title>RandomPass</title>
+</head>
+<body>
+<h1>Сгенерировать пароль</h1>
+<p><span id="pass">тут пусто</span></p>
+
+<label>Длина пароля: <input type="number" id="length" value="16" class="label_length"></label>
+<div>
+    <label>
+        <input type="checkbox" id="specials" class="label_input" checked>
+        - Символы
+    </label>
+    <span class="label">OR</span>
+    <label>
+        Цифры -
+        <input type="checkbox" id="digits" class="label_input" checked>
+    </label>
+</div>
+<button>ТАП</button>
+</body>
+</html>
