@@ -17,7 +17,6 @@ settings = {
     "include_specials": True
 }
 
-
 ##################################################
 
 def generate_password(length=None, include_digits=None, include_specials=None):
@@ -43,7 +42,6 @@ def generate_password(length=None, include_digits=None, include_specials=None):
 def get_settings():
     return jsonify(settings)
 
-
 ##### изменить настройки
 @app.route("/settings", methods=["PUT"])
 def update_settings():
@@ -55,7 +53,6 @@ def update_settings():
     if "include_specials" in data:
         settings["include_specials"] = bool(data["include_specials"])
     return jsonify({"status": "ok", "settings": settings})
-
 
 ##################################################
 
@@ -83,7 +80,6 @@ def send_message():
 
     bot.send_message(chat_id, text, parse_mode="HTML")
     return jsonify({"status": "ok", "sent_text": text})
-
 
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))
