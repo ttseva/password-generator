@@ -5,7 +5,7 @@ $(document).ready(function () {
         const include_digits = $("#digits").is(":checked");
 
         $.ajax({
-            url: "http://127.0.0.1:5000/password",
+            url: "/password",
             method: "POST",
             contentType: "application/json",
             data: JSON.stringify({
