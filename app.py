@@ -1,12 +1,15 @@
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, send_from_directory
 import telebot
 import random
 import string
 import os
 from flask_cors import CORS
 
-app = Flask(__name__)
+app = Flask(__name__, static_folder="static")
 CORS(app)
+@app.route("/")
+def index():
+    return send_from_directory(app.static_folder, "index.html")
 
 BOT_TOKEN = os.environ.get("BOT_TOKEN")
 bot = telebot.TeleBot(BOT_TOKEN)
@@ -33,7 +36,6 @@ def generate_password(length=None, include_digits=None, include_specials=None):
         chars += "!@#$%^&*()-_=+[]{};:,.<>?/"
 
     return ''.join(random.choice(chars) for _ in range(length))
-
 
 ##################################################
 
