@@ -3,10 +3,9 @@ from sqlalchemy.orm import Session
 from app.db import get_db
 from app.models import PasswordRequest, SettingsUpdate
 from app.logic import generate_password, save_password_to_db, get_last_passwords, clear_password_history
+from app.config import settings
 
 router = APIRouter()
-
-settings = {"default_length":16, "include_digits": True, "include_specials": True}
 
 @router.get("/settings")
 def get_settings():
