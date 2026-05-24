@@ -8,6 +8,8 @@ from app.routes import router
 
 app = FastAPI()
 print(f"Using database: {settings.database_url}")
+print(f"App version: {settings.app_version}")
+print(f"Environment: {settings.app_env}")
 current_dir = Path(__file__).parent
 
 app.mount("/static", StaticFiles(directory=current_dir / "static"), name="static")

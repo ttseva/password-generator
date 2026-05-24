@@ -11,6 +11,9 @@ class Settings(BaseSettings):
     include_digits: bool = True
     include_specials: bool = True
 
+    app_version: str = "unknown"
+    app_env: str = "development"
+
     class Config:
         env_file = ".env"
 

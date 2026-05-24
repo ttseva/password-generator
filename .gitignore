@@ -1,6 +1,8 @@
 .env
 
-.github/workflows/main.yml
+__pycache__
+app/__pycache__
+
 venv/
 .idea/
 .DS_Store

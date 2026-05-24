@@ -1,0 +1,15 @@
+services:
+  app:
+    image: ${DOCKERHUB_USERNAME}/pass-gen:${IMAGE_TAG}
+    container_name: password-generator
+    ports:
+      - "${PORT:-8000}:8000"
+    environment:
+      - PORT=8000
+      - DATABASE_URL=${DATABASE_URL:-sqlite:///./passwords_prod.db}
+      - APP_VERSION=${IMAGE_TAG}
+      - APP_ENV=production
+      - DEFAULT_LENGTH=${DEFAULT_LENGTH:-16}
+      - INCLUDE_DIGITS=${INCLUDE_DIGITS:-true}
+      - INCLUDE_SPECIALS=${INCLUDE_SPECIALS:-true}
+    restart: always
