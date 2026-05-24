@@ -1,17 +1,18 @@
-import uvicorn
 from fastapi import FastAPI
-from fastapi.staticfiles import StaticFiles
 from fastapi.responses import FileResponse
+from fastapi.staticfiles import StaticFiles
 from pathlib import Path
-from app.routes import router
+
 from app.config import settings
+from app.routes import router
 
 app = FastAPI()
-
+print(f"Using database: {settings.database_url}")
 current_dir = Path(__file__).parent
 
 app.mount("/static", StaticFiles(directory=current_dir / "static"), name="static")
 app.include_router(router)
+
 
 @app.get("/")
 def root():

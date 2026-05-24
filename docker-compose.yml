@@ -1,6 +1,17 @@
-version: "3.9"
-
 services:
+  db:
+    image: postgres:16
+    container_name: password-generator-db
+    restart: always
+    environment:
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: password_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
   app:
     build: .
     container_name: password-generator
@@ -9,9 +20,62 @@ services:
     environment:
       - PORT=${PORT:-8000}
       - HOST=0.0.0.0
-      - DATABASE_URL=sqlite:///./passwords.db
+      - DATABASE_URL=postgresql://user:password@db:5432/password_db
       - DEFAULT_LENGTH=16
       - INCLUDE_DIGITS=true
       - INCLUDE_SPECIALS=true
+    depends_on:
+      - db
     volumes:
       - .:/app
+
+#   app1:
+#    build: .
+#    ports:
+#      - "8001:8000"
+#    environment:
+#      - PORT=${PORT:-8000}
+#      - HOST=0.0.0.0
+#      - DATABASE_URL=postgresql://user:password@db:5432/password_db
+#      - DEFAULT_LENGTH=16
+#      - INCLUDE_DIGITS=true
+#      - INCLUDE_SPECIALS=true
+#    depends_on:
+#      - db
+#    volumes:
+#      - .:/app
+
+#   app2:
+#    build: .
+#    ports:
+#      - "8002:8000"
+#    environment:
+#      - PORT=${PORT:-8000}
+#      - HOST=0.0.0.0
+#      - DATABASE_URL=postgresql://user:password@db:5432/password_db
+#      - DEFAULT_LENGTH=16
+#      - INCLUDE_DIGITS=true
+#      - INCLUDE_SPECIALS=true
+#    depends_on:
+#      - db
+#    volumes:
+#      - .:/app
+
+#   app3:
+#    build: .
+#    ports:
+#      - "8003:8000"
+#    environment:
+#      - PORT=${PORT:-8000}
+#      - HOST=0.0.0.0
+#      - DATABASE_URL=postgresql://user:password@db:5432/password_db
+#      - DEFAULT_LENGTH=16
+#      - INCLUDE_DIGITS=true
+#      - INCLUDE_SPECIALS=true
+#    depends_on:
+#      - db
+#    volumes:
+#      - .:/app
+
+volumes:
+  postgres_data:

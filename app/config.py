@@ -1,5 +1,6 @@
 from pydantic_settings import BaseSettings
 
+
 class Settings(BaseSettings):
     port: int = 8000
     host: str = "0.0.0.0"

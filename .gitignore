@@ -1,4 +1,6 @@
 .env
 
+.github/workflows/main.yml
 venv/
 .idea/
+.DS_Store
