@@ -6,6 +6,7 @@ class Settings(BaseSettings):
     host: str = "0.0.0.0"
 
     database_url: str = "sqlite:///./passwords.db"
+    redis_url: str = "redis://localhost:6379/0"
 
     default_length: int = 16
     include_digits: bool = True
@@ -16,6 +17,7 @@ class Settings(BaseSettings):
 
     class Config:
         env_file = ".env"
+        extra = "ignore"
 
 
 settings = Settings()

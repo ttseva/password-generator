@@ -1,4 +1,9 @@
 services:
+  redis:
+    image: redis:alpine
+    container_name: password-generator-redis-prod
+    restart: always
+
   app:
     image: ${DOCKERHUB_USERNAME}/pass-gen:${IMAGE_TAG}
     container_name: password-generator
@@ -7,9 +12,12 @@ services:
     environment:
       - PORT=8000
       - DATABASE_URL=${DATABASE_URL:-sqlite:///./passwords_prod.db}
+      - REDIS_URL=redis://redis:6379/0
       - APP_VERSION=${IMAGE_TAG}
       - APP_ENV=production
       - DEFAULT_LENGTH=${DEFAULT_LENGTH:-16}
       - INCLUDE_DIGITS=${INCLUDE_DIGITS:-true}
       - INCLUDE_SPECIALS=${INCLUDE_SPECIALS:-true}
+    depends_on:
+      - redis
     restart: always
