@@ -1,6 +1,6 @@
 services:
   db:
-    image: postgres:16
+    image: postgres:16-alpine
     container_name: password-generator-db
     restart: always
     environment:
@@ -15,8 +15,41 @@ services:
     container_name: password-generator-redis
     restart: always
 
+  migrate:
+    build: .
+    command: python -m app.cli migrate
+    environment:
+      - DATABASE_URL=postgresql://user:password@db:5432/password_db
+    depends_on:
+      - db
+    profiles:
+      - tools
+
+  create-admin:
+    build: .
+    command: python -m app.cli create-admin
+    environment:
+      - DATABASE_URL=postgresql://user:password@db:5432/password_db
+      - ADMIN_USERNAME=${ADMIN_USERNAME:-admin}
+      - ADMIN_PASSWORD=${ADMIN_PASSWORD:-admin}
+    depends_on:
+      - db
+    profiles:
+      - tools
+
+  clear-cache:
+    build: .
+    command: python -m app.cli clear-cache
+    environment:
+      - REDIS_URL=redis://redis:6379/0
+    depends_on:
+      - redis
+    profiles:
+      - tools
+
   app:
     build: .
+    command: python -m app.cli server
     ports:
       - "8001-8003:8000"
     environment:

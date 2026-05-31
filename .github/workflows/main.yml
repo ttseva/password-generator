@@ -4,9 +4,11 @@ on:
   push:
     branches:
       - main
+      - production
 
 jobs:
-  make-and-push-image:
+  build-and-push-image:
+    if: github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -28,3 +30,37 @@ jobs:
           push: true
           tags: |
             ${{ secrets.DOCKERHUB_USERNAME }}/pass-gen:${{ github.sha }}
+
+  deploy-production:
+    if: github.ref == 'refs/heads/production'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Login to Docker Hub
+        uses: docker/login-action@v4
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Pull image
+        env:
+          DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
+          IMAGE_TAG: ${{ github.sha }}
+        run: docker compose -f docker-compose.production.yml pull app migrate
+
+      - name: Apply database migrations
+        env:
+          DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
+          IMAGE_TAG: ${{ github.sha }}
+          DATABASE_URL: ${{ secrets.PROD_DATABASE_URL }}
+        run: |
+          docker compose -f docker-compose.production.yml --profile tools run --rm migrate
+
+      - name: Start application
+        env:
+          DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
+          IMAGE_TAG: ${{ github.sha }}
+          DATABASE_URL: ${{ secrets.PROD_DATABASE_URL }}
+        run: docker compose -f docker-compose.production.yml up -d app

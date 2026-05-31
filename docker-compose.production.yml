@@ -1,17 +1,64 @@
 services:
+  db:
+    image: postgres:16-alpine
+    container_name: password-generator-db-prod
+    restart: always
+    environment:
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: password_db
+    volumes:
+      - postgres_data_prod:/var/lib/postgresql/data
+
   redis:
     image: redis:alpine
     container_name: password-generator-redis-prod
     restart: always
 
+  migrate:
+    image: ${DOCKERHUB_USERNAME}/pass-gen:${IMAGE_TAG}
+    command: python -m app.cli migrate
+    environment:
+      - DATABASE_URL=${DATABASE_URL:-postgresql://user:password@db:5432/password_db}
+      - REDIS_URL=redis://redis:6379/0
+      - APP_VERSION=${IMAGE_TAG}
+      - APP_ENV=production
+    depends_on:
+      - db
+    profiles:
+      - tools
+
+  create-admin:
+    image: ${DOCKERHUB_USERNAME}/pass-gen:${IMAGE_TAG}
+    command: python -m app.cli create-admin
+    environment:
+      - DATABASE_URL=${DATABASE_URL:-postgresql://user:password@db:5432/password_db}
+      - ADMIN_USERNAME=${ADMIN_USERNAME}
+      - ADMIN_PASSWORD=${ADMIN_PASSWORD}
+    depends_on:
+      - db
+    profiles:
+      - tools
+
+  clear-cache:
+    image: ${DOCKERHUB_USERNAME}/pass-gen:${IMAGE_TAG}
+    command: python -m app.cli clear-cache
+    environment:
+      - REDIS_URL=redis://redis:6379/0
+    depends_on:
+      - redis
+    profiles:
+      - tools
+
   app:
     image: ${DOCKERHUB_USERNAME}/pass-gen:${IMAGE_TAG}
     container_name: password-generator
+    command: python -m app.cli server
     ports:
       - "${PORT:-8000}:8000"
     environment:
       - PORT=8000
-      - DATABASE_URL=${DATABASE_URL:-sqlite:///./passwords_prod.db}
+      - DATABASE_URL=${DATABASE_URL:-postgresql://user:password@db:5432/password_db}
       - REDIS_URL=redis://redis:6379/0
       - APP_VERSION=${IMAGE_TAG}
       - APP_ENV=production
@@ -19,5 +66,9 @@ services:
       - INCLUDE_DIGITS=${INCLUDE_DIGITS:-true}
       - INCLUDE_SPECIALS=${INCLUDE_SPECIALS:-true}
     depends_on:
+      - db
       - redis
     restart: always
+
+volumes:
+  postgres_data_prod:
